@@ -16,7 +16,18 @@ Then Function checks for if the Number is 1 or divisible by 2 or 3. If Yes then 
 After 1, 2, 3 Checked We don't try to divide the Number with a Multiple of 2 or 3. As
 if the Number could be divided by a Multiple of 2 or 3 then I could've been also divided by 2 or 3.
 
-So, we skip multiples of 2 or 3 as `devidor` and go to next number which is 5. Now we check for `n % 5` or `n % 5+2` i.e `n % 7` because 6 is a multiple or 2 or 3. So only viable next number was next ODD Number hence `+2`.
+So, we skip multiples of 2 or 3 as `devidor` and go to next number which is 5.
+
+We set the max checking limit to `maxLimitCheck` which is equal to `Math.sqrt(n)` cause the dividers for `n` just start to switch place after the square root of the Number.
+
+####    Example
+
+Divider for 100 after sqrt(100) = 10 they just are the same:
+
+100 = 2 × 50 = 4 × 25 = 5 × 20 = 10 × 10 = 20 × 5 = 25 × 4 = 50 × 2
+
+
+Now we check for `n % 5` or `n % 5+2` i.e `n % 7` because 6 is a multiple or 2 or 3. So only viable next number was next ODD Number hence `+2`.
 
 So after 5  & checking for 7 we skipped:
 
