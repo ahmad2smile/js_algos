@@ -1,0 +1,9 @@
+{
+  "name": "js_algos_best_way",
+  "version": "1.0.0",
+  "description": "Algorithum for common JS problems",
+  "main": "index.js",
+  "repository": "https://github.com/ahmad2smile/js_algos_best_way.git",
+  "author": "Shafiq Ahmad",
+  "license": "MIT"
+}
