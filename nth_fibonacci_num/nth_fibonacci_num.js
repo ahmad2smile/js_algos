@@ -2,14 +2,8 @@
 
 
 function nthFibonacci(n) {
-    let fibo = [0, 1];
-    if(n <= 2) return 1;
-
-    for (let i = 2; i <= n; i++) {
-        fibo[i] = fibo[i - 1] + fibo[i - 2];
-    }
-
-    return fibo[n];
+    if(n <= 1) return n;
+    else return nthFibonacci(n-1) + nthFibonacci(n-2);
 }
 
 ///////////////////////////////////
