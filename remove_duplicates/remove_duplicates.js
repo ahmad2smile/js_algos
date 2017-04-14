@@ -1,3 +1,4 @@
+"use strict";
 
 const inputArray = [ 0, 1, 1, 1, 2, 3, 2, 4];
 
@@ -14,7 +15,7 @@ function removeDub(inarr) {
 ///////////////////////////////////
 //Display Jorgan
 
-process.stdout.write('\033c');
+process.stdout.write('\x1Bc');
 console.log(inputArray);
 console.log(removeDub(inputArray));
 

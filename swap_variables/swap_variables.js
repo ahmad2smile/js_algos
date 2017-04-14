@@ -1,3 +1,4 @@
+"use strict";
 
 function swapTwoVariables(a, b) {
     a = a ^ b;
@@ -10,7 +11,7 @@ function swapTwoVariables(a, b) {
 ///////////////////////////////////
 //Display Jorgan
 
-process.stdout.write('\033c');
+process.stdout.write('\x1Bc');
 let a = 2;
 let b = 3;
 console.log(`a before: ${a}, b before: ${b}`);
