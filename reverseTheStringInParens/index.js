@@ -1,93 +1,76 @@
-"use strict";
+const PLACEHOLDER = "-";
 
-const reverseStr = str => (str || "").split("").reverse().join("");
+const reverseBraced = bracedChar =>
+	bracedChar.reverse().map(c => {
+		if (c === "(") {
+			return ")";
+		}
+		if (c === ")") {
+			return "(";
+		}
 
-const combineStringOnParenState = (parenState, str) => {
-    if (parenState.startParen && parenState.startParen.startParen) {
-        return combineStringOnParenState(parenState.startParen, parenState.startParen.str);
-    }
+		return c;
+	});
 
-    const midStr = (parenState.startParen && parenState.startParen.str) || str;
+const trimBraces = str => {
+	const chars = str.split("");
+	const strLength = chars.length;
 
-    return (parenState.startStr || "") + midStr + (parenState.endStr || "");
-}
+	// Remove start and end braces if exits
+	if (strLength && chars[0] === "(" && chars[strLength - 1] === ")") {
+		return chars.slice(1, strLength - 1).join("");
+	}
 
+	return str;
+};
 
-const reverseParenStrings = (parenState) => {
-    if (!parenState.startParen) {
-        parenState.str = reverseStr(parenState.str);
+const combineStringParts = (bracedStr, startEndStr) => {
+	const allPlaceholders = startEndStr.filter(c => c === PLACEHOLDER).join("");
 
-        return;
-    }
+	return startEndStr.join("").replace(allPlaceholders, bracedStr);
+};
 
-    const newStartStr = reverseStr(parenState.endStr);
-    const newStr = reverseStr(parenState.str);
-    const newEndStr = reverseStr(parenState.startStr);
+const processStringOnBraces = str => {
+	let braces = 0;
 
-    parenState.startStr = newStartStr;
-    parenState.str = newStr;
-    parenState.startParen.str = newStr;
-    parenState.endStr = newEndStr;
+	const bracedChar = [];
+	const startEndStr = str
+		.split("")
+		.map(c => {
+			if (c === "(") {
+				braces += 1;
+			}
 
+			if (braces) {
+				bracedChar.push(c);
+			}
 
-    return reverseParenStrings(parenState.startParen);
-}
+			if (c === ")") {
+				braces = Math.max(0, (braces -= 1));
+			}
 
-const splitStringOnParenState = (parenState, str) => {
-    // 0------TAKE_ALL_TILL_HERE(
-    parenState.startStr = str.slice(0, parenState.startParen.position);
+			return braces ? PLACEHOLDER : c;
+		})
+		.filter(c => !(c === "(" || c === ")"));
 
-    // +1 at start to exclude ( and at the end is already to excluded by slice )
-    const charAfterStartParen = parenState.startParen.position + 1;
-    const charBeforeEndParen = parenState.startParen.end;
-    const newStr = str.slice(charAfterStartParen, charBeforeEndParen);
-    parenState.str = newStr;
+	let bracedStr = trimBraces(reverseBraced(bracedChar).join(""));
 
-    // 0------)TAKE_ALL_FROM_HERE_TO_END
-    parenState.endStr = str.slice(parenState.startParen.end + 1);
+	if (bracedStr.includes("(")) {
+		bracedStr = processStringOnBraces(bracedStr);
+	}
 
-    if (parenState.startParen.startParen) {
-        return splitStringOnParenState(parenState.startParen, newStr);
-    }
-
-    parenState.startParen.str = newStr;
-
-    return;
-}
-
-const reverseTheStringInParens = (str) => {
-    const parenState = {}
-
-    str.split("").forEach((c, i) => {
-        if (c === "(") {
-            if (!parenState.startParen) {
-                parenState.startParen = { position: i, end: undefined };
-            } else {
-                parenState.startParen.startParen = { position: i - parenState.startParen.position - 1, end: undefined }; // -1 to offset to 0 index
-            }
-        } else if (c === ")") {
-            if (parenState.startParen.startParen && !parenState.startParen.startParen.end) {
-                parenState.startParen.startParen.end = i - parenState.startParen.position - 1; // -1 to offset to 0 index
-            } else {
-                parenState.startParen.end = i;
-            }
-        }
-    });
-
-    splitStringOnParenState(parenState, str);
-    reverseParenStrings(parenState.startParen);
-
-    return parenState.startStr + combineStringOnParenState(parenState.startParen, parenState.startParen.str) + parenState.endStr;
-}
+	return combineStringParts(bracedStr, startEndStr);
+};
 
 ///////////////////////////////////
 //Display Jorgan
 
-process.stdout.write('\x1Bc');
-console.log("foo(bar) =>", reverseTheStringInParens("foo(bar)"));
-console.log("\n(bar) =>", reverseTheStringInParens("(bar)"));
-console.log("\nfoo(bar)blim =>", reverseTheStringInParens("foo(bar)blim"));
-console.log("\nfoo(foo(bar))blim =>", reverseTheStringInParens("foo(foo(bar))blim"));
+process.stdout.write("\x1Bc");
+console.log("foo(bar) =>", processStringOnBraces("foo(bar)"));
+console.log("\n(bar) =>", processStringOnBraces("(bar)"));
+console.log("\nfoo(bar)blim =>", processStringOnBraces("foo(bar)blim"));
+console.log("\nfoo(foo(bar))blim =>", processStringOnBraces("foo(foo(bar))blim"));
+console.log("\nfoo(foo(bar(xyz)))blim =>", processStringOnBraces("foo(foo(bar(xyz)))blim"));
 
 //Display Jorgan
 ///////////////////////////////////
