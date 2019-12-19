@@ -34,24 +34,26 @@ const processStringOnBraces = str => {
 	let braces = 0;
 
 	const bracedChar = [];
-	const startEndStr = str
-		.split("")
-		.map(c => {
-			if (c === "(") {
-				braces += 1;
-			}
+	const startEndStr = str.split("").map(c => {
+		if (c === "(") {
+			braces += 1;
+		}
 
-			if (braces) {
-				bracedChar.push(c);
-			}
+		if (braces) {
+			bracedChar.push(c);
+		}
 
-			if (c === ")") {
-				braces = Math.max(0, (braces -= 1));
-			}
+		if (c === ")") {
+			braces = Math.max(0, (braces -= 1));
 
-			return braces ? PLACEHOLDER : c;
-		})
-		.filter(c => !(c === "(" || c === ")"));
+			// if last closing brace still replace that with PLACEHOLDER
+			if (!braces) {
+				return PLACEHOLDER;
+			}
+		}
+
+		return braces ? PLACEHOLDER : c;
+	});
 
 	let bracedStr = trimBraces(reverseBraced(bracedChar).join(""));
 
